@@ -1,0 +1,62 @@
+######################################################################################################
+#	htaccess file
+#	HELP:
+#		[L] - "Last" - last rewrite rule to check, the script will stop of that rule matches
+#		[QSA] - "Query String Append" - the query string will be appended to the end of the rewrite
+######################################################################################################
+
+DirectoryIndex index.php
+Options +FollowSymLinks
+RewriteEngine on
+
+#ErrorDocument 500 /error/404.php
+
+#check if the page has been redirected already, if it has do nothing#
+RewriteCond %{ENV:REDIRECT_STATUS} 200
+RewriteRule .* - [L]
+
+#exclude certain files from being rewritten#
+RewriteRule ^(inc/classes/min) - [L]
+
+#####experimental, for taking away the numbers in a css file for versioning without a ?
+RewriteRule ^(.*)\.[\d]{10}\.(css|js)$ $1.$2 [L]
+
+#check if the url ends in an extension, if so do nothing#
+RewriteRule \.(jpg|gif|png|less|css|js|ico|pdf|ttf|otf|eot|woff|webp|webm|ogv|mp4)$ - [L]
+
+RewriteRule index.php$ - [L]
+
+#if te url starts with redirect do nothing, some servers this gets appended to the end of the URL once its been redirected once#
+RewriteRule ^redirect - [L]
+
+#if it is in the cms redirect to the cms#
+RewriteRule ^cms([-a-zA-Z0-9\/\&\=]+)$ cms/index.php?$1 [L]
+
+#if it is in the bms redirect to the bms#
+RewriteRule ^bms([-a-zA-Z0-9\/\&\=]+)$ bms/index.php?$1 [L]
+
+#apply the appropriate redirect rule#
+#RewriteRule ^([^/]+)/([^/]+)/[^*]$ index.php?root=$1&subpage=$2&host=%{REMOTE_HOST} [L,QSA]
+RewriteRule ^([^/]+)/([^/]+)/(.*)/$ index.php?root=$1&subpage=$2&uri=$3 [L,QSA]
+RewriteRule ^([^/]+)/([^/]+)/(.*)$ index.php?root=$1&subpage=$2&uri=$3 [L,QSA]
+RewriteRule ^([^/]+)/([^/]+)/$ index.php?root=$1&subpage=$2 [L,QSA]
+RewriteRule ^([^/]+)/([^/]+)$ index.php?root=$1&subpage=$2 [L,QSA]
+RewriteRule ^(.*)/$ index.php?root=$1 [L,QSA]
+RewriteRule ^(.*)$ index.php?root=$1 [L,QSA]
+
+#use for Gzipping, commented out as css and js is minified wich is already gzipped so gzipping again will cause errors
+#php_value output_handler ob_gzhandler
+
+#<filesMatch ".css$">
+#AddHandler application/x-httpd-php .css
+#</filesMatch>
+
+#<filesMatch ".js$">
+#AddHandler application/x-httpd-php .js
+#</filesMatch>
+
+<FilesMatch "\.(ttf|otf|eot|woff)$">
+  <IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+  </IfModule>
+</FilesMatch>
