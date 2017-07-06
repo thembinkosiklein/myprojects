@@ -1,4 +1,4 @@
-[phpFlickr](https://github.com/thembinkosiklein/myprojects)
+[phpLocations](https://github.com/thembinkosiklein/myprojects)
 =====================================================
 by [Rodney Ncane](thembinkosi.klein@gmail.com)
 
